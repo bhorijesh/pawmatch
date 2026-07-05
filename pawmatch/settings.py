@@ -1,34 +1,16 @@
 """
 Django settings for PawMatch pet adoption project.
 """
-from pathlib import Path
 import os
 import sys
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / '.env')
 
-def _load_env_file(path):
-    if not path.is_file():
-        return
-    for line in path.read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith('#'):
-            continue
-        key, sep, value = line.partition('=')
-        if not sep:
-            continue
-        key = key.strip()
-        value = value.strip()
-        if len(value) >= 2 and value[0] == value[-1] and value[0] in '"\'':
-            value = value[1:-1]
-        os.environ.setdefault(key, value)
-
-
-_load_env_file(BASE_DIR / '.env')
-
-# Ensure apps package is importable
-import sys
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
@@ -71,6 +53,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.adoption.context_processors.user_roles',
             ],
         },
     },
@@ -127,7 +110,3 @@ KHALTI_WEBSITE_URL = "http://127.0.0.1:8000/"
 KHALTI_SECRET_KEY = os.environ['KHALTI_SECRET_KEY']
 # Paste live_public_key verbatim from the same dashboard (checkout widget)
 KHALTI_PUBLIC_KEY = os.environ['KHALTI_PUBLIC_KEY']
-
-# eSewa Payment Configuration (same as car rental ca/)
-ESEWA_SECRET_KEY = os.environ['ESEWA_SECRET_KEY']
-ESEWA_PRODUCT_CODE = "EPAYTEST"

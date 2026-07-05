@@ -18,9 +18,9 @@
                 <a href="{% url 'map' %}">Map</a>
                 <a href="{% url 'about' %}">About</a>
                 <a href="{% url 'contact' %}">Contact</a>
-                {% if user.is_authenticated and not user.is_superuser %}
+                {% if user.is_authenticated and not is_shelter_staff %}
                     <a href="{% url 'my_applications' %}">My Applications</a>
-                {% elif user.is_authenticated and user.is_superuser %}
+                {% elif user.is_authenticated and is_shelter_staff %}
                     <a href="{% url 'shelter_dashboard' %}">Shelter Dashboard</a>
                 {% endif %}
             </div>

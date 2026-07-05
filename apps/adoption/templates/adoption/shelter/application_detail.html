@@ -24,6 +24,11 @@
             <button name="action" value="approve" class="btn btn-primary">Approve</button>
             <button name="action" value="reject" class="btn btn-ghost" style="color:var(--coral);">Reject</button>
         </form>
+        {% elif application.status == 'paid' %}
+        <form method="POST" style="margin-top:1.5rem;">
+            {% csrf_token %}
+            <button name="action" value="complete" class="btn btn-primary">Mark Adoption Complete</button>
+        </form>
         {% endif %}
         <a href="{% url 'shelter_applications' %}" class="btn btn-outline" style="margin-top:1rem;">Back</a>
     </div>

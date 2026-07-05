@@ -58,18 +58,14 @@ Open http://127.0.0.1:8000/
 - Shelter admin dashboard for managing pets and applications
 - Warm, mobile-friendly UI
 
-## Payment (Khalti / eSewa)
-
-Uses the same Khalti keys and flow as the car rental project in `ca/`:
+## Payment (Khalti)
 
 | URL | Purpose |
 |-----|---------|
 | `/init-khalti/` | Start Khalti ePayment |
 | `/verify-khalti/` | Khalti return/callback |
 | `/verify-payment/` | Khalti checkout widget verification |
-| `/applications/confirmation/<id>/` | Payment page with Khalti button + widget |
-
-eSewa config (`ESEWA_SECRET_KEY`, `ESEWA_PRODUCT_CODE`) is included in settings for future use (same as `ca/`).
+| `/applications/confirmation/<id>/` | Payment page with Khalti button |
 
 ## Note
 

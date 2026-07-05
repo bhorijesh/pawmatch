@@ -126,6 +126,26 @@ class SavedLocation(models.Model):
     longitude = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"({self.latitude}, {self.longitude})"
+
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} — {self.created_at:%Y-%m-%d}"
+
 
 @receiver(post_save, sender=User)
 def create_user_extras(sender, instance, created, **kwargs):
@@ -135,14 +155,38 @@ def create_user_extras(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=AdoptionApplication)
-def send_adoption_status_email(sender, instance, **kwargs):
-    if instance.status == 'verified':
+def send_adoption_status_email(sender, instance, created, **kwargs):
+    if created and instance.status == 'pending':
+        subject = "Application Received - PawMatch"
+        body = (
+            f"Dear {instance.adopter.full_name},\n\n"
+            f"We received your application to adopt {instance.pet.name}.\n"
+            f"The shelter will review it and notify you when a decision is made.\n\n"
+            f"Thank you for choosing PawMatch!"
+        )
+    elif instance.status == 'verified':
         subject = "Adoption Application Approved - PawMatch"
         body = (
             f"Dear {instance.adopter.full_name},\n\n"
             f"Your application to adopt {instance.pet.name} has been approved!\n"
             f"Adoption fee: ${instance.total_amount}\n\n"
+            f"Please log in to complete payment.\n\n"
             f"Thank you for choosing PawMatch!"
+        )
+    elif instance.status == 'paid':
+        subject = "Payment Confirmed - PawMatch"
+        body = (
+            f"Dear {instance.adopter.full_name},\n\n"
+            f"Your payment for {instance.pet.name} was successful.\n"
+            f"Meet date: {instance.preferred_meet_date or 'TBD'}\n\n"
+            f"The shelter will contact you with next steps."
+        )
+    elif instance.status == 'completed':
+        subject = "Adoption Complete - PawMatch"
+        body = (
+            f"Dear {instance.adopter.full_name},\n\n"
+            f"Congratulations! Your adoption of {instance.pet.name} is complete.\n"
+            f"We hope you enjoy your new companion!"
         )
     elif instance.status == 'cancelled':
         subject = "Adoption Application Update - PawMatch"
@@ -154,4 +198,9 @@ def send_adoption_status_email(sender, instance, **kwargs):
     else:
         return
 
-    send_mail(subject, body, settings.DEFAULT_FROM_EMAIL or 'noreply@pawmatch.local', [instance.adopter.email], fail_silently=True)
+    send_mail(
+        subject, body,
+        settings.DEFAULT_FROM_EMAIL or 'noreply@pawmatch.local',
+        [instance.adopter.email],
+        fail_silently=True,
+    )

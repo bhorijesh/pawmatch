@@ -1,8 +1,9 @@
 """Seed sample pets and a shelter admin account."""
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 
 from apps.adoption.models import Pet
+from apps.adoption.permissions import SHELTER_STAFF_GROUP
 
 
 SAMPLE_PETS = [
@@ -57,6 +58,8 @@ class Command(BaseCommand):
     help = 'Create shelter admin and sample pets for demo'
 
     def handle(self, *args, **options):
+        group, _ = Group.objects.get_or_create(name=SHELTER_STAFF_GROUP)
+
         admin, created = User.objects.get_or_create(
             username='shelteradmin',
             defaults={'email': 'admin@shelter.local', 'is_superuser': True, 'is_staff': True},
@@ -67,6 +70,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Created shelter admin: shelteradmin / admin12345'))
         else:
             self.stdout.write('Shelter admin already exists.')
+        admin.groups.add(group)
 
         adopter, created_adopter = User.objects.get_or_create(
             username='adopter1',

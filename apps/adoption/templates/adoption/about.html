@@ -1,27 +1,199 @@
 {% extends 'adoption/base.html' %}
 {% block title %}About{% endblock %}
 
+{% block extra_css %}
+<style>
+.about-intro {
+    max-width: 720px;
+    margin: 0 auto 3rem;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.75;
+}
+.about-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3.5rem;
+}
+.about-feature {
+    background: var(--warm-white);
+    padding: 1.75rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    text-align: center;
+}
+.about-feature .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.about-feature h3 { font-weight: 800; margin-bottom: 0.5rem; color: var(--sage-dark); }
+.about-feature p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.65; }
+.about-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 3.5rem;
+}
+.about-step {
+    background: var(--warm-white);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    position: relative;
+}
+.about-step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background: var(--coral);
+    color: white;
+    font-weight: 800;
+    border-radius: 50%;
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+.about-step h3 { font-weight: 800; margin-bottom: 0.4rem; color: var(--text); font-size: 1.05rem; }
+.about-step p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+.about-audience {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+.about-audience-card {
+    background: linear-gradient(145deg, var(--sage-dark), var(--sage));
+    color: white;
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+}
+.about-audience-card h3 { font-weight: 800; font-size: 1.25rem; margin-bottom: 0.75rem; }
+.about-audience-card p { opacity: 0.92; font-size: 0.95rem; line-height: 1.65; margin-bottom: 1rem; }
+.about-audience-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.about-audience-card li {
+    padding: 0.35rem 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+.about-audience-card li::before { content: '✓ '; font-weight: 800; }
+.about-cta {
+    text-align: center;
+    background: var(--warm-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2.5rem 1.5rem;
+    box-shadow: var(--shadow);
+}
+.about-cta h2 { font-weight: 800; margin-bottom: 0.5rem; color: var(--sage-dark); }
+.about-cta p { color: var(--text-muted); margin-bottom: 1.5rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+.about-cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="hero" style="padding:3rem 1.5rem;">
+<div class="hero">
     <h1>About PawMatch</h1>
-    <p>Connecting loving homes with pets in need — powered by smart algorithms.</p>
+    <p>We help loving families find the right pet — and help shelters place every animal in a forever home.</p>
 </div>
+
 <div class="container page">
-    <div class="landing-features" style="margin:0;">
-        <div class="feature-card">
-            <div class="icon">📐</div>
-            <h3>Haversine Distance</h3>
-            <p>We calculate the great-circle distance between you and each shelter using the Haversine formula, so you always see the nearest adoptable pets first.</p>
+    <p class="about-intro">
+        PawMatch is a pet adoption platform built around one simple idea: the right match matters.
+        Whether you are looking for a playful puppy, a calm senior cat, or a small companion for your apartment,
+        we make it easy to discover adoptable pets near you, learn about their personality, and start the
+        adoption process — all in one place.
+    </p>
+
+    <h2 class="section-title">What Makes PawMatch Different</h2>
+    <p class="section-subtitle">Thoughtful tools that put pets and people first</p>
+
+    <div class="about-features">
+        <div class="about-feature">
+            <div class="icon">📍</div>
+            <h3>Pets Near You</h3>
+            <p>Share your location and browse adoptable pets sorted by distance. Our map view shows shelters and available animals in your area so you can visit the ones closest to home.</p>
         </div>
-        <div class="feature-card">
-            <div class="icon">🎯</div>
-            <h3>Cosine Similarity</h3>
-            <p>Your adoption history is encoded as feature vectors (species, size, age, temperament). Cosine similarity finds pets that match your preferences.</p>
+        <div class="about-feature">
+            <div class="icon">✨</div>
+            <h3>Matches That Fit You</h3>
+            <p>The more you explore and apply, the better PawMatch understands what you are looking for — species, size, age, and temperament — and surfaces pets that fit your lifestyle.</p>
         </div>
-        <div class="feature-card">
-            <div class="icon">❤️</div>
-            <h3>Our Mission</h3>
-            <p>Every pet deserves a forever home. PawMatch makes adoption simple, transparent, and personalized for both adopters and shelters.</p>
+        <div class="about-feature">
+            <div class="icon">🏠</div>
+            <h3>Simple Adoption Flow</h3>
+            <p>Read detailed pet profiles, submit an application online, and track your status from one dashboard. No phone tag, no guesswork — just a clear path from browsing to bringing your pet home.</p>
+        </div>
+        <div class="about-feature">
+            <div class="icon">🤝</div>
+            <h3>Built for Shelters Too</h3>
+            <p>Shelter staff get a dedicated dashboard to list pets, manage applications, and connect with adopters. PawMatch supports the people doing the hard work on the ground.</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-subtitle">From first search to forever home in four steps</p>
+
+    <div class="about-steps">
+        <div class="about-step">
+            <span class="about-step-num">1</span>
+            <h3>Browse &amp; Search</h3>
+            <p>Explore our catalog of adoptable pets. Filter by species, size, and more — or use your location to see who is waiting nearby.</p>
+        </div>
+        <div class="about-step">
+            <span class="about-step-num">2</span>
+            <h3>Find Your Match</h3>
+            <p>Read each pet's profile — photos, traits, temperament, and adoption fee — and save the ones that feel like a good fit.</p>
+        </div>
+        <div class="about-step">
+            <span class="about-step-num">3</span>
+            <h3>Apply Online</h3>
+            <p>Submit an adoption application directly through PawMatch. Shelters review your request and reach out when it is time to meet.</p>
+        </div>
+        <div class="about-step">
+            <span class="about-step-num">4</span>
+            <h3>Welcome Home</h3>
+            <p>Complete the adoption with your shelter, and give a deserving animal the loving home they have been waiting for.</p>
+        </div>
+    </div>
+
+    <h2 class="section-title">Who PawMatch Is For</h2>
+    <p class="section-subtitle">Supporting both sides of every adoption</p>
+
+    <div class="about-audience">
+        <div class="about-audience-card">
+            <h3>For Adopters</h3>
+            <p>Looking for a new family member? PawMatch gives you everything you need to search with confidence.</p>
+            <ul>
+                <li>Personalized pet recommendations</li>
+                <li>Distance-sorted results and an interactive map</li>
+                <li>Detailed profiles with photos and traits</li>
+                <li>Track all your applications in one place</li>
+            </ul>
+        </div>
+        <div class="about-audience-card" style="background: linear-gradient(145deg, #C07830, var(--amber));">
+            <h3>For Shelters</h3>
+            <p>Rescue organizations and shelters use PawMatch to reach more adopters and manage placements efficiently.</p>
+            <ul>
+                <li>List pets with photos, location, and details</li>
+                <li>Review and respond to adoption applications</li>
+                <li>Dashboard to manage your available animals</li>
+                <li>Reach adopters actively searching in your area</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="about-cta">
+        <h2>Ready to Meet Your Match?</h2>
+        <p>Thousands of pets are waiting for a home. Start browsing today — your new best friend might be closer than you think.</p>
+        <div class="about-cta-actions">
+            <a href="{% url 'pet_list' %}" class="btn btn-primary">Browse Pets</a>
+            <a href="{% url 'register' %}" class="btn btn-outline">Create an Account</a>
         </div>
     </div>
 </div>
