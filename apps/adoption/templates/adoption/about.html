@@ -1,0 +1,28 @@
+{% extends 'adoption/base.html' %}
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="hero" style="padding:3rem 1.5rem;">
+    <h1>About PawMatch</h1>
+    <p>Connecting loving homes with pets in need — powered by smart algorithms.</p>
+</div>
+<div class="container page">
+    <div class="landing-features" style="margin:0;">
+        <div class="feature-card">
+            <div class="icon">📐</div>
+            <h3>Haversine Distance</h3>
+            <p>We calculate the great-circle distance between you and each shelter using the Haversine formula, so you always see the nearest adoptable pets first.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">🎯</div>
+            <h3>Cosine Similarity</h3>
+            <p>Your adoption history is encoded as feature vectors (species, size, age, temperament). Cosine similarity finds pets that match your preferences.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">❤️</div>
+            <h3>Our Mission</h3>
+            <p>Every pet deserves a forever home. PawMatch makes adoption simple, transparent, and personalized for both adopters and shelters.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

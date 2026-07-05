@@ -1,0 +1,25 @@
+{% extends 'adoption/base.html' %}
+{% block title %}Search{% if query %}: {{ query }}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <h1 class="section-title">Search Results{% if query %} for "{{ query }}"{% endif %}</h1>
+    {% if pets %}
+    <div class="pet-grid">
+        {% for pet in pets %}
+        <article class="pet-card">
+            {% if pet.image %}<img class="pet-card-img" src="{{ pet.image.url }}" alt="{{ pet.name }}">
+            {% else %}<div class="pet-card-img-placeholder">🐾</div>{% endif %}
+            <div class="pet-card-body">
+                <h3 class="pet-card-name">{{ pet.name }}</h3>
+                <p class="pet-card-meta">{{ pet.breed|default:pet.species }}</p>
+                <a href="{% url 'pet_detail' pet.id %}" class="btn btn-primary btn-sm">View</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="emoji">🔍</div><p>No pets found. Try a different search.</p></div>
+    {% endif %}
+</div>
+{% endblock %}

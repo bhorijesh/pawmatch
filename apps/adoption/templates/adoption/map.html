@@ -1,0 +1,43 @@
+{% extends 'adoption/base.html' %}
+{% block title %}Pet Map{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <h1 class="section-title">Pets &amp; Shelters Map</h1>
+    <p class="section-subtitle">All adoptable pets with location data — distances via Haversine</p>
+    <div id="map"></div>
+    <div class="pet-grid" style="margin-top:2rem;">
+        {% for pet in pets %}
+        <article class="pet-card">
+            {% if pet.image %}<img class="pet-card-img" src="{{ pet.image.url }}" alt="{{ pet.name }}">
+            {% else %}<div class="pet-card-img-placeholder">🐾</div>{% endif %}
+            <div class="pet-card-body">
+                <h3 class="pet-card-name">{{ pet.name }}</h3>
+                <p class="pet-card-meta">{{ pet.shelter_name|default:"Local Shelter" }}</p>
+                <a href="{% url 'pet_detail' pet.id %}" class="btn btn-outline btn-sm">Details</a>
+            </div>
+        </article>
+        {% empty %}
+        <div class="empty-state"><p>No pets with location data yet.</p></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const pets = [
+    {% for pet in pets %}
+    { name: "{{ pet.name|escapejs }}", lat: {{ pet.latitude }}, lng: {{ pet.longitude }}, url: "{% url 'pet_detail' pet.id %}" },
+    {% endfor %}
+];
+const map = L.map('map').setView([27.7172, 85.3240], 12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+pets.forEach(p => {
+    L.marker([p.lat, p.lng]).addTo(map).bindPopup(`<b>${p.name}</b><br><a href="${p.url}">View</a>`);
+});
+if (pets.length) map.fitBounds(L.latLngBounds(pets.map(p => [p.lat, p.lng])));
+</script>
+{% endblock %}

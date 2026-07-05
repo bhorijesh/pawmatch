@@ -1,0 +1,19 @@
+{% extends 'adoption/base.html' %}
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <h1 class="section-title">Contact Us</h1>
+    <form method="POST" class="form-card">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary" style="width:100%;">Send Message</button>
+    </form>
+</div>
+<style>.form-card input, .form-card textarea { width:100%; padding:0.75rem 1rem; border:2px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; }</style>
+{% endblock %}

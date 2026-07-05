@@ -1,0 +1,133 @@
+"""
+Django settings for PawMatch pet adoption project.
+"""
+from pathlib import Path
+import os
+import sys
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def _load_env_file(path):
+    if not path.is_file():
+        return
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        key, sep, value = line.partition('=')
+        if not sep:
+            continue
+        key = key.strip()
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in '"\'':
+            value = value[1:-1]
+        os.environ.setdefault(key, value)
+
+
+_load_env_file(BASE_DIR / '.env')
+
+# Ensure apps package is importable
+import sys
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
+SECRET_KEY = os.environ['SECRET_KEY']
+
+DEBUG = True
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'apps.adoption',
+]
+
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+ROOT_URLCONF = 'pawmatch.urls'
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = 'pawmatch.wsgi.application'
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+]
+
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/index/'
+
+DEFAULT_FROM_EMAIL = 'noreply@pawmatch.local'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Khalti ePayment (KPG-2) — https://docs.khalti.com/khalti-epayment/
+# Sandbox: use live_secret_key from https://test-admin.khalti.com (Keys section)
+# Production: use live_secret_key from https://admin.khalti.com (Keys section)
+KHALTI_SANDBOX = True
+KHALTI_API_BASE = (
+    "https://dev.khalti.com/api/v2/"
+    if KHALTI_SANDBOX
+    else "https://khalti.com/api/v2/"
+)
+KHALTI_RETURN_URL = "http://127.0.0.1:8000/verify-khalti/"
+KHALTI_WEBSITE_URL = "http://127.0.0.1:8000/"
+# Paste live_secret_key verbatim from your Khalti merchant dashboard
+KHALTI_SECRET_KEY = os.environ['KHALTI_SECRET_KEY']
+# Paste live_public_key verbatim from the same dashboard (checkout widget)
+KHALTI_PUBLIC_KEY = os.environ['KHALTI_PUBLIC_KEY']
+
+# eSewa Payment Configuration (same as car rental ca/)
+ESEWA_SECRET_KEY = os.environ['ESEWA_SECRET_KEY']
+ESEWA_PRODUCT_CODE = "EPAYTEST"

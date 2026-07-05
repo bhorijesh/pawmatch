@@ -1,0 +1,64 @@
+{% extends 'adoption/base.html' %}
+{% block title %}Apply — {{ pet.name }}{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <h1 class="section-title">Adoption Application</h1>
+    <p class="section-subtitle">Apply to adopt <strong>{{ pet.name }}</strong> ({{ pet.species }})</p>
+
+    {% if error_message %}
+        <div class="alert alert-error" style="max-width:560px;margin:0 auto 1rem;">{{ error_message }}</div>
+    {% endif %}
+
+    <form method="POST" class="form-card">
+        {% csrf_token %}
+        <input type="hidden" name="pet_id" value="{{ pet.id }}">
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="full_name" class="form-control" required value="{{ user.get_full_name|default:user.username }}">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" required value="{{ user.email }}">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="tel" name="phone" class="form-control" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Address</label>
+            <textarea name="address" class="form-control" rows="2" required></textarea>
+        </div>
+        <div class="form-group">
+            <label>Home Type</label>
+            <select name="home_type" class="form-control">
+                <option value="House">House</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Condo">Condo</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Preferred Meet &amp; Greet Date</label>
+            <input type="date" name="meet_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Why do you want to adopt {{ pet.name }}?</label>
+            <textarea name="message" class="form-control" rows="4" placeholder="Tell us about your home and experience with pets…"></textarea>
+        </div>
+        {% if loyalty_points %}
+        <div class="form-group">
+            <label>Redeem Loyalty Points (you have {{ loyalty_points }})</label>
+            <input type="number" name="redeem_points" class="form-control" min="0" max="{{ loyalty_points }}" value="0">
+        </div>
+        {% endif %}
+        <p style="margin-bottom:1rem;color:var(--text-muted);font-size:0.9rem;">
+            Adoption fee: <strong>${{ pet.adoption_fee }}</strong>
+        </p>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Submit Application</button>
+    </form>
+</div>
+{% endblock %}

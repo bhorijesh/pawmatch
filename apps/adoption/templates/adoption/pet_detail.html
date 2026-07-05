@@ -1,0 +1,70 @@
+{% extends 'adoption/base.html' %}
+{% block title %}{{ pet.name }}{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <div class="detail-grid">
+        <div>
+            {% if pet.image %}
+                <img src="{{ pet.image.url }}" alt="{{ pet.name }}" class="detail-img">
+            {% else %}
+                <div class="pet-card-img-placeholder" style="height:360px;border-radius:var(--radius-sm);">
+                    {% if pet.species == 'Cat' %}🐈{% elif pet.species == 'Dog' %}🐕{% else %}🐾{% endif %}
+                </div>
+            {% endif %}
+        </div>
+        <div>
+            <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.5rem;">{{ pet.name }}</h1>
+            <p style="color:var(--text-muted);font-size:1.1rem;margin-bottom:1rem;">
+                {{ pet.breed|default:pet.species }} · {{ pet.age_group }} · {{ pet.size }}
+            </p>
+            {% if distance %}
+                <span class="badge badge-distance" style="font-size:0.9rem;padding:0.4rem 0.875rem;">📍 {{ distance }} km away</span>
+            {% endif %}
+            <div class="detail-traits" style="margin-top:1.25rem;">
+                <span class="trait">{{ pet.temperament }}</span>
+                <span class="trait {% if pet.good_with_kids %}yes{% else %}no{% endif %}">
+                    {% if pet.good_with_kids %}✓{% else %}✗{% endif %} Good with kids
+                </span>
+                <span class="trait {% if pet.good_with_dogs %}yes{% else %}no{% endif %}">
+                    {% if pet.good_with_dogs %}✓{% else %}✗{% endif %} Good with dogs
+                </span>
+                <span class="trait {% if pet.good_with_cats %}yes{% else %}no{% endif %}">
+                    {% if pet.good_with_cats %}✓{% else %}✗{% endif %} Good with cats
+                </span>
+            </div>
+            <p style="margin:1.25rem 0;line-height:1.7;">{{ pet.description }}</p>
+            {% if pet.shelter_name %}
+                <p style="font-weight:600;color:var(--sage-dark);">🏠 {{ pet.shelter_name }}</p>
+            {% endif %}
+            <p style="font-size:1.5rem;font-weight:800;color:var(--coral);margin:1rem 0;">
+                {% if pet.adoption_fee == 0 %}Free Adoption{% else %}${{ pet.adoption_fee }} adoption fee{% endif %}
+            </p>
+            {% if pet.is_available %}
+                <a href="{% url 'apply' %}?pet_id={{ pet.id }}" class="btn btn-primary">Apply to Adopt</a>
+            {% else %}
+                <span class="badge" style="background:#F8D7DA;color:#721C24;padding:0.5rem 1rem;">Already Adopted</span>
+            {% endif %}
+        </div>
+    </div>
+    {% if pet.latitude and pet.longitude %}
+    <div style="margin-top:2rem;">
+        <h2 class="section-title" style="text-align:left;font-size:1.25rem;">Shelter Location</h2>
+        <div id="map"></div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if pet.latitude and pet.longitude %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const map = L.map('map').setView([{{ pet.latitude }}, {{ pet.longitude }}], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+L.marker([{{ pet.latitude }}, {{ pet.longitude }}]).addTo(map)
+    .bindPopup('<b>{{ pet.name }}</b><br>{{ pet.shelter_name|default:"Shelter" }}').openPopup();
+</script>
+{% endif %}
+{% endblock %}

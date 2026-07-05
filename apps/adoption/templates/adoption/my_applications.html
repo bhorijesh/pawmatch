@@ -1,0 +1,60 @@
+{% extends 'adoption/base.html' %}
+{% block title %}My Applications{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <h1 class="section-title">My Adoption Applications</h1>
+
+    {% if applications %}
+    <div class="pet-grid">
+        {% for app in applications %}
+        <article class="pet-card">
+            {% if app.pet.image %}
+                <img class="pet-card-img" src="{{ app.pet.image.url }}" alt="{{ app.pet.name }}">
+            {% else %}
+                <div class="pet-card-img-placeholder">
+                    {% if app.pet.species == 'Cat' %}🐈{% elif app.pet.species == 'Dog' %}🐕{% else %}🐾{% endif %}
+                </div>
+            {% endif %}
+            <div class="pet-card-body">
+                <h3 class="pet-card-name">{{ app.pet.name }}</h3>
+                <p class="pet-card-meta">{{ app.pet.species }} · Applied {{ app.application_date }}</p>
+                <p class="pet-card-meta">Meet: {{ app.preferred_meet_date|default:"—" }}</p>
+                <p class="pet-fee">${{ app.total_amount }}</p>
+                <span class="status-pill status-{{ app.status }}">{{ app.get_status_display }}</span>
+                {% if app.status == 'cancelled' and app.notification %}
+                    <p style="color:var(--coral);font-size:0.875rem;margin-top:0.5rem;">{{ app.notification }}</p>
+                {% endif %}
+
+                <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem;">
+                    <a href="{% url 'pet_detail' app.pet.id %}" class="btn btn-outline btn-sm">View Pet</a>
+
+                    {% if app.status == 'verified' %}
+                    <form action="{% url 'initkhalti' %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="application_id" value="{{ app.id }}">
+                        <button type="submit" class="btn btn-primary btn-sm" style="background:#5C2D91;">Pay with Khalti</button>
+                    </form>
+                    {# <a href="{% url 'application_confirmation' app.id %}" class="btn btn-secondary btn-sm">Pay Options</a> #}
+                    {% endif %}
+
+                    {% if app.status == 'pending' or app.status == 'verified' %}
+                    <form action="{% url 'cancel_application' app.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-ghost btn-sm">Cancel</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="emoji">📋</div>
+        <p>No applications yet.</p>
+        <a href="{% url 'index' %}" class="btn btn-primary" style="margin-top:1rem;">Browse Pets</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

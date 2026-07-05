@@ -1,0 +1,115 @@
+{% extends 'adoption/base.html' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block extra_css %}
+<style>
+.landing-hero {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #3D6B54 0%, #5B8A72 40%, #7BA892 100%);
+    position: relative;
+    overflow: hidden;
+}
+.landing-hero::before {
+    content: '🐕 🐈 🐰';
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.08;
+    top: 10%;
+    right: 5%;
+    letter-spacing: 2rem;
+}
+.landing-content { text-align: center; color: white; padding: 2rem; z-index: 1; max-width: 640px; }
+.landing-content h1 { font-size: clamp(2.5rem, 6vw, 3.75rem); font-weight: 800; margin-bottom: 1rem; line-height: 1.15; }
+.landing-content p { font-size: 1.2rem; opacity: 0.92; margin-bottom: 2rem; }
+.landing-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    max-width: 900px;
+    margin: -3rem auto 0;
+    padding: 0 1.5rem 4rem;
+    position: relative;
+    z-index: 2;
+}
+.feature-card {
+    background: var(--warm-white);
+    padding: 1.75rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    border: 1px solid var(--border);
+}
+.feature-card .icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.feature-card h3 { font-weight: 800; margin-bottom: 0.5rem; color: var(--sage-dark); }
+.feature-card p { color: var(--text-muted); font-size: 0.9rem; }
+#locationStatus { margin-top: 1rem; font-size: 0.95rem; opacity: 0.9; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="landing-hero">
+    <div class="landing-content">
+        <h1>Find Your Perfect Companion</h1>
+        <p>Discover adoptable pets near you with smart recommendations tailored to your preferences.</p>
+        <div class="hero-actions">
+            <button id="findPetsBtn" class="btn btn-primary" style="font-size:1.1rem;padding:0.875rem 2rem;">Find Pets Near Me</button>
+            <a href="{% url 'index' %}" class="btn btn-outline" style="font-size:1.1rem;padding:0.875rem 2rem;">Browse All</a>
+        </div>
+        <p id="locationStatus"></p>
+    </div>
+</section>
+
+<div class="landing-features">
+    <div class="feature-card">
+        <div class="icon">📍</div>
+        <h3>Nearby Pets</h3>
+        <p>Haversine algorithm finds shelters and pets within your radius.</p>
+    </div>
+    <div class="feature-card">
+        <div class="icon">✨</div>
+        <h3>Smart Matches</h3>
+        <p>Cosine similarity recommends pets based on your adoption history.</p>
+    </div>
+    <div class="feature-card">
+        <div class="icon">🏠</div>
+        <h3>Easy Adoption</h3>
+        <p>Apply online, meet your pet, and bring home a new family member.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('findPetsBtn').addEventListener('click', function() {
+    const status = document.getElementById('locationStatus');
+    if (!navigator.geolocation) {
+        status.textContent = 'Geolocation not supported. Redirecting to browse all pets…';
+        setTimeout(() => window.location.href = '{% url "index" %}', 1500);
+        return;
+    }
+    status.textContent = 'Getting your location…';
+    navigator.geolocation.getCurrentPosition(
+        function(pos) {
+            const { latitude, longitude } = pos.coords;
+            fetch('{% url "save_location" %}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ latitude, longitude })
+            }).then(() => {
+                window.location.href = '{% url "index" %}';
+            }).catch(() => {
+                window.location.href = '{% url "index" %}?latitude=' + latitude + '&longitude=' + longitude;
+            });
+        },
+        function() {
+            status.textContent = 'Location denied. Showing all pets instead…';
+            setTimeout(() => window.location.href = '{% url "index" %}', 1500);
+        }
+    );
+});
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends 'adoption/base.html' %}
+{% block title %}Payment — {{ application.pet.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.confirmation-card {
+    max-width: 520px;
+    margin: 2rem auto;
+    background: var(--warm-white);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+}
+.confirmation-card h1 { font-weight: 800; text-align: center; margin-bottom: 1.5rem; }
+.detail-row { padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+.detail-row:last-of-type { border-bottom: none; margin-bottom: 1.5rem; }
+.pay-actions { display: flex; flex-direction: column; gap: 0.75rem; }
+.btn-khalti { background: #5C2D91; color: white; }
+.btn-khalti:hover { background: #4a2475; color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <div class="confirmation-card">
+        <h1>Adoption Payment</h1>
+        <p style="color:var(--text-muted);margin-bottom:1.25rem;">Thank you! Your application was approved. Complete payment to finalize adoption.</p>
+
+        <div class="detail-row"><strong>Application ID:</strong> {{ application.id }}</div>
+        <div class="detail-row"><strong>Pet:</strong> {{ application.pet.name }} ({{ application.pet.species }})</div>
+        <div class="detail-row"><strong>Adopter:</strong> {{ application.adopter.full_name }}</div>
+        <div class="detail-row"><strong>Meet Date:</strong> {{ application.preferred_meet_date|default:"—" }}</div>
+        <div class="detail-row"><strong>Total Amount:</strong> Rs. {{ application.total_amount }}</div>
+
+        <div class="pay-actions">
+            <!-- Khalti ePayment (same flow as car rental ca/) -->
+            <form id="khalti-form" action="{% url 'initkhalti' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="application_id" value="{{ application.id }}">
+                <button type="submit" class="btn btn-khalti" style="width:100%;">Pay with Khalti</button>
+            </form>
+
+            {# Khalti Checkout widget — disabled; ePayment redirect only
+            <button id="payment-button" class="btn btn-primary" style="width:100%;">Pay with Khalti Widget</button>
+            #}
+
+            <a href="{% url 'my_applications' %}" class="btn btn-ghost" style="width:100%;text-align:center;">Back to Applications</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{# Khalti Checkout widget — disabled; ePayment redirect only
+<script src="https://khalti.s3.ap-south-1.amazonaws.com/KPG/dist/2020.12.17.0.0.0/khalti-checkout.iffe.js"></script>
+<script>
+var config = {
+    publicKey: "{{ khalti_public_key }}",
+    productIdentity: "{{ application.id }}",
+    productName: "Pet Adoption - {{ application.pet.name }}",
+    productUrl: "{{ request.build_absolute_uri }}",
+    paymentPreference: ["KHALTI"],
+    eventHandler: {
+        onSuccess: function(payload) {
+            fetch("{% url 'verify_payment' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}",
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                alert(data.message);
+                window.location.href = "{% url 'my_applications' %}";
+            })
+            .catch(function(err) { console.error(err); });
+        },
+        onError: function(error) { console.error(error); alert('Payment failed'); },
+        onClose: function() { console.log('Widget closed'); },
+    },
+};
+
+var checkout = new KhaltiCheckout(config);
+document.getElementById('payment-button').onclick = function() {
+    checkout.show({ amount: {{ khalti_amount_paisa }} });
+};
+</script>
+#}
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'adoption/base.html' %}
+{% block title %}Manage Pets{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+        <h1 class="section-title" style="margin:0;text-align:left;">Manage Pets</h1>
+        <a href="{% url 'pet_create' %}" class="btn btn-primary">+ Add Pet</a>
+    </div>
+    {% if pets %}
+    <table class="data-table">
+        <thead><tr><th>Name</th><th>Species</th><th>Fee</th><th>Available</th><th>Actions</th></tr></thead>
+        <tbody>
+            {% for pet in pets %}
+            <tr>
+                <td><strong>{{ pet.name }}</strong></td>
+                <td>{{ pet.species }}</td>
+                <td>${{ pet.adoption_fee }}</td>
+                <td>{% if pet.is_available %}✅{% else %}❌{% endif %}</td>
+                <td style="display:flex;gap:0.5rem;">
+                    <a href="{% url 'pet_edit' pet.pk %}" class="btn btn-outline btn-sm">Edit</a>
+                    <a href="{% url 'pet_delete' pet.pk %}" class="btn btn-ghost btn-sm" onclick="return confirm('Delete this pet?')">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><p>No pets yet. <a href="{% url 'pet_create' %}">Add your first pet</a></p></div>
+    {% endif %}
+</div>
+{% endblock %}

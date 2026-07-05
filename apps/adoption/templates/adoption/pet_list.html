@@ -1,0 +1,38 @@
+{% extends 'adoption/base.html' %}
+{% block title %}All Pets{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <h1 class="section-title">All Adoptable Pets</h1>
+    <p class="section-subtitle">Sorted by distance when location is available</p>
+
+    {% if pets %}
+    <div class="pet-grid">
+        {% for pet in pets %}
+        <article class="pet-card">
+            {% if pet.image %}
+                <img class="pet-card-img" src="{{ pet.image.url }}" alt="{{ pet.name }}">
+            {% else %}
+                <div class="pet-card-img-placeholder">🐾</div>
+            {% endif %}
+            <div class="pet-card-body">
+                <h3 class="pet-card-name">{{ pet.name }}</h3>
+                <p class="pet-card-meta">{{ pet.breed|default:pet.species }} · {{ pet.age_group }}</p>
+                <div class="pet-badges">
+                    <span class="badge badge-species">{{ pet.species }}</span>
+                    <span class="badge badge-size">{{ pet.size }}</span>
+                    {% if pet.distance %}<span class="badge badge-distance">{{ pet.distance|floatformat:1 }} km</span>{% endif %}
+                </div>
+                <div class="pet-card-footer">
+                    <span class="pet-fee">{% if pet.adoption_fee == 0 %}Free{% else %}${{ pet.adoption_fee }}{% endif %}</span>
+                    <a href="{% url 'pet_detail' pet.id %}" class="btn btn-primary btn-sm">View</a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="emoji">🐾</div><p>No pets available right now.</p></div>
+    {% endif %}
+</div>
+{% endblock %}

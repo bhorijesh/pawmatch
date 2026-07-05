@@ -1,0 +1,26 @@
+{% extends 'adoption/base.html' %}
+{% block title %}Applications{% endblock %}
+
+{% block content %}
+<div class="container page">
+    <h1 class="section-title">Adoption Applications</h1>
+    {% if applications %}
+    <table class="data-table">
+        <thead><tr><th>Adopter</th><th>Pet</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.adopter.full_name }}</td>
+                <td>{{ app.pet.name }}</td>
+                <td>{{ app.application_date }}</td>
+                <td><span class="status-pill status-{{ app.status }}">{{ app.get_status_display }}</span></td>
+                <td><a href="{% url 'review_application' app.id %}" class="btn btn-outline btn-sm">Review</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state"><p>No applications yet.</p></div>
+    {% endif %}
+</div>
+{% endblock %}
